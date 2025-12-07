@@ -14,9 +14,10 @@ language_codes = {
 }
 
 class OCRProcessor:
-    def __init__(self):
+    def __init__(self, easyocr_reader=None, use_gpu=False):
         self.manga_ocr = None
-        self.easy_ocr = None
+        self.easy_ocr = easyocr_reader  # Cho phép truyền reader đã khởi tạo sẵn
+        self.use_gpu = use_gpu  # Lưu cấu hình GPU để dùng khi khởi tạo lazy
 
     def initialize(self, source_lang: str, source_lng_cd: str):
         self.source_lang = source_lang
@@ -43,7 +44,7 @@ class OCRProcessor:
             if x1 < x2 and y1 < y2:
                 if source_language == 'English':
                     if self.easy_ocr is None:
-                        self.easy_ocr = easyocr.Reader(['en'], gpu = False)
+                        self.easy_ocr = easyocr.Reader(['en'], gpu=self.use_gpu)
 
                     result = self.easy_ocr.readtext(img[y1:y2, x1:x2], paragraph=True)
                     texts = []

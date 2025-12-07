@@ -1,11 +1,15 @@
 import cv2
 import numpy as np
 from typing import List
-from .textblock import TextBlock
-from .textblock import TextBlock, sort_textblock_rectangles
-from ..detection import does_rectangle_fit, is_mostly_contained, is_mostly_contained
 
-def generate_mask(img: np.ndarray, blk_list: list[TextBlock], default_padding: int = 5) -> np.ndarray:
+from .textblock import TextBlock, sort_textblock_rectangles
+from ..detection import is_mostly_contained
+
+
+def generate_mask(
+    img: np.ndarray, blk_list: List[TextBlock], default_padding: int = 5
+) -> np.ndarray:
+    """Build mask that covers all inpainting regions."""
     h, w, c = img.shape
     mask = np.zeros((h, w), dtype=np.uint8)  # Start with a black mask
     
@@ -47,7 +51,9 @@ def generate_mask(img: np.ndarray, blk_list: list[TextBlock], default_padding: i
     
     return mask
 
+
 def does_rectangle_fit(bigger_rect, smaller_rect):
+    """Check whether a rectangle fits entirely inside another."""
     x1, y1, x2, y2 = bigger_rect
     px1, py1, px2, py2 = smaller_rect
     
@@ -63,7 +69,11 @@ def does_rectangle_fit(bigger_rect, smaller_rect):
     
     return fits_horizontally and fits_vertically
 
-def lists_to_blk_list(blk_list: List[TextBlock], texts_bboxes: List, texts_string: List):
+
+def lists_to_blk_list(
+    blk_list: List[TextBlock], texts_bboxes: List, texts_string: List
+):
+    """Assign recognized text strings back to text blocks."""
     group = list(zip(texts_bboxes, texts_string))  
 
     for blk in blk_list:
